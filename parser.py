@@ -146,3 +146,128 @@ class Parser:
             
             else:
                 return self.parse_expression()
+
+    #---Parse Declaration----------------------------------------------------------------------------------------------
+    def parse_declaration(self):
+        keyword = self.current_token.value
+        is_const = True if keyword == "const" else False
+        self.advance()
+        name = self.current_token.value
+        self.advance()
+        self.expect(TT_EQ)
+        value = self.parse_expression()
+        return Declaration(name,value,is_const)
+
+    #---Parse Conditionals------------------------------------------------------------------------------------------------
+    def parse_if(self): # if <condition>:
+        self.advance()
+        self.expect(TT_LPAREN)
+        if_condition = self.parse_expression()
+        self.expect(TT_RPAREN)
+        self.expect(TT_LBRACE)
+
+        statements = []
+        while self.current_token.type_ != TT_RBRACE:
+            statements.append(self.parse_statement())
+        self.expect(TT_RBRACE)
+
+        elif_parts = []
+        while self.current_token.type_ == TT_KEYWORD and self.current_token.value == "elif":
+                self.advance()
+                self.expect(TT_LPAREN)
+                elif_condition = self.parse_expression()
+                self.expect(TT_RPAREN)
+                self.expect(TT_LBRACE)
+                elif_body = []
+                while self.current_token.type_ != TT_RBRACE:
+                    elif_body.append(self.parse_statement())
+                self.expect(TT_RBRACE)
+                elif_parts.append((elif_condition,elif_body))
+            
+        if self.current_token.type_ == TT_KEYWORD and self.current_token.value == "else":
+                self.advance()
+                self.expect(TT_LBRACE)
+                else_part = []
+                while self.current_token.type_ != TT_RBRACE:
+                    else_part.append(self.parse_statement())
+                self.expect(TT_RBRACE)
+
+        return IfStatement(if_condition,statements,elif_parts,else_part)
+    
+    #---Parse Loop--------------------------------------------------------------------------------------------------------------
+    def parse_loop(self):
+        self.advance()
+        self.expect(TT_LBRACE)
+
+        loop_body = []
+        while self.current_token.type_ != TT_RBRACE:
+            loop_body.append(self.parse_statement())
+        self.expect(TT_RBRACE)
+
+        return LoopStatement(loop_body)
+
+    #---Parse For---------------------------------------------------------------------------
+    def parse_for(self):
+        self.advance()
+        variable = self.current_token.value 
+        self.advance()
+        self.expect(TT_KEYWORD)
+
+        if self.current_token.value != 'in':
+            raise Exception("Expected 'in'")
+        
+        self.advance()
+        iterable = self.parse_expression()
+        self.expect(TT_LBRACE)
+        
+        body = []
+        while self.current_token.type_ != TT_RBRACE:
+            body.append(self.parse_statement())
+        self.expect(TT_RBRACE)
+
+        return ForStatement(variable,iterable,body)
+
+    #---Parse Return-----------------------------------------------------------------------------
+    def parse_return(self):
+        self.advance()
+        expression = self.parse_expression()
+        return ReturnStatement(expression)
+
+    #---Parse Skip------------------------------------------------------------------------------
+    def parse_skip(self):
+        self.advance()
+        return SkipStatement()
+
+    #---Parse Break----------------------------------------------------------------------------------   
+    def parse_break(self):
+        self.advance()
+        return BreakStatement()
+
+    #---Parse Out----------------------------------------------------------------------------------
+    def parse_out(self):
+        self.advance()
+        self.expect(TT_LPAREN)
+        expression = self.parse_expression()
+        self.expect(TT_RPAREN)
+
+        return OutStatement(expression)
+
+    #---Parse Prompt-----------------------------------------------------------------------------
+    def parse_prompt(self):
+        self.advance()
+        self.expect(TT_LPAREN)
+        variable = self.current_token.value
+        self.advance()
+        self.expect(TT_RPAREN)
+        return PromptStatement(variable)
+    
+    #---Parse Program--------------------------------------------------------------------------
+    def parse_program(self):
+        statements = []
+        while self.current_token.type_ != TT_EOF:
+            staements.append(self.parse_statement())
+        return statements
+
+#========================================================================================================
+#                                           THE END                                                     
+#========================================================================================================
