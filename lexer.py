@@ -130,7 +130,6 @@ class Lexer:
             # Newline Termination
             if char == '\n':
                 self.advance()
-                self.add(TT_NEWLINE)
 
             # Skip whitespaces
             elif char.isspace():
