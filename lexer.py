@@ -305,7 +305,16 @@ class Lexer:
 
         if text in KEYWORDS: # if the text is a keyword
             self.add(TT_KEYWORD,text)
+        elif text == "False" or text == "True":
+            self.add(TT_BOOL,text) #if a bool
         else:
-            self.add(TT_IDENT,text) #if an identifier
+            self.add(TT_IDENT,text)
 
 #----------------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    lexer = Lexer("True")
+    tokens = lexer.tokenize()
+
+    for tok in tokens:
+        print(tok)

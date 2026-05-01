@@ -8,6 +8,13 @@ class IntegerLiteral(ASTNodes): #only stores the value of the integer
     def __repr__(self):
         return f"Integer({self.value})"
 
+class FloatLiteral(ASTNodes):
+    def __init__(self,value):
+        self.value = value
+
+    def __repr__(self):
+        return f"Float({self.value})"
+
 class Identifier(ASTNodes): #only stores the name of the identifier
     def __init__(self,name):
         self.name = name 
@@ -75,7 +82,7 @@ class Declaration(ASTNodes): #stores the name, value, and maintains a srare if i
 
     def __repr__(self):
         kind = "const" if self.is_const else "dec"
-        return f"{kind} {name} = {value}"
+        return f"Declaration({kind}: Identifier({self.name}) = {self.value})"
 
 class FunctionCall(ASTNodes): #stores the function name and arguements
     def __init__(self,name,arguements):
@@ -94,7 +101,7 @@ class IfStatement(ASTNodes): #stores the expression to check for, the then body,
         self.else_part = else_part or []
 
     def __repr__(self):
-        return f"If({self.condition})"
+        return f"If({self.condition}{self.then_part}{self.elif_part}{self.else_part})"
 
 class LoopStatement(ASTNodes): #only stores the loop body
     def __init__(self,body):
