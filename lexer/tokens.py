@@ -71,10 +71,14 @@ KEYWORDS = {
 }
 
 class Tokens:
-    def __init__(self,token_type,line: int,token_value = None):
+    def __init__(self,token_type,line: int,column,token_value = None):
         self.token_type = token_type
         self.token_value = token_value 
         self.line = line
+        self.column = column
 
-        def __repr__(self):
-            return f"Token({self.token_type}:{self.token_value})"
+    def __repr__(self):
+        if self.token_value:
+            return f"Token({self.token_type}:{self.token_value} - ln,{self.line})"
+        else:
+            return f"Token({self.token_type} -> ln,{self.line})"
