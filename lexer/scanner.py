@@ -125,15 +125,54 @@ class Lexer:
                     self.add(TT_STAR,self.line)
                     self.advance()
 
+            #---Comment---------------------
+            elif char == '/':
+                if self.peek() == '*':
+                    self.advance()
+                    self.advance()
+
+                    while self.current_char() is not None and self.current_char() != '*' and self.peek() != '/':
+                        self.advance()
+                    self.advance()
+                    self.advance()
+                    print("Finished")
+
+            elif char == '/':
+                if self.peek() == '/':
+                    self.advance()
+                    while self.current_char() is not None and self.current_char() != '\n':
+                        self.advance()
+                    
+                else:
+                    self.add(TT_SLASH,self.line)
+                    self.advance()
+
+            
 
 
-        
-        
+
+
+
+
+
+
+            else:
+                raise Exception(f"Invalid token: {char}")
+            
+                
+                    
+
+            
+
         self.add(TT_EOF,self.line)            
         return self.tokens
 
 if __name__ == "__main__":
-    source = """&& || **"""
+    source = """/*
+    == 
+    ==
+    */
+    =="""
     lexer = Lexer(source)
     tokens = lexer.tokenise()
     for tok in tokens:
