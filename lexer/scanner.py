@@ -6,6 +6,7 @@
 #--------------------------------------------------------------------------------------
 from tokens import *
 
+
 #---Lexer Class ------------------------------------------------------------------
 class Lexer:
     def __init__(self,source) -> None:
@@ -133,6 +134,8 @@ class Lexer:
 
                     while self.current_char() is not None and self.current_char() != '*' and self.peek() != '/':
                         self.advance()
+                        self.advance()
+                    
                     self.advance()
                     self.advance()
                     print("Finished")
@@ -147,19 +150,17 @@ class Lexer:
                     self.add(TT_SLASH,self.line)
                     self.advance()
 
-            
+            elif char in ('"',"'"):
+                string_initialiser = char
+                self.advance()
 
-
-
-
-
-
-
-
-            else:
-                raise Exception(f"Invalid token: {char}")
-            
-                
+                result = []
+                while self.current_char() is not None and self.current_char().isalnum():
+                    result.append(self.advance())
+                    result.append(self.advance())
+                    
+                text = ''.join(result)
+                print(text)
                     
 
             
@@ -168,11 +169,7 @@ class Lexer:
         return self.tokens
 
 if __name__ == "__main__":
-    source = """/*
-    == 
-    ==
-    */
-    =="""
+    source = """ "hel*lo" """
     lexer = Lexer(source)
     tokens = lexer.tokenise()
     for tok in tokens:
