@@ -78,7 +78,7 @@ class Lexer:
             Checks if a given sequence of characters is a keyword or and identifier.
             """
             result = []
-            while self.current_char() is not None and self.current_char() not in ('',' ','\t', '\n'):
+            while self.current_char() is not None and self.current_char() not in ('',' ','\t', '\n') and self.current_char() not in SYMBOLS:
                 result.append(self.advance())
             text = "".join(result)
             if text in KEYWORDS:
@@ -188,7 +188,7 @@ class Lexer:
                     self.advance()
                     self.advance()
                     print("Finished")
-
+            #---Slash------------------------
             elif char == '/':
                 if self.peek() == '/':
                     self.advance()
@@ -198,33 +198,43 @@ class Lexer:
                 else:
                     self.add(TT_SLASH,self.line)
                     self.advance()
-
+            
+             #---Single Chars----------------------------------------------
+            elif char == '(':self.add(TT_LPAREN,self.line);self.advance()
+            elif char == ')':self.add(TT_RPAREN,self.line);self.advance()
+            elif char == '[':self.add(TT_LBRACKET,self.line);self.advance()
+            elif char == ']':self.add(TT_LBRACKET,self.line);self.advance()
+            elif char == '{':self.add(TT_LBRACE,self.line);self.advance()
+            elif char == '}':self.add(TT_RBRACE,self.line);self.advance()
+            elif char == '+':self.add(TT_PLUS,self.line);self.advance()
+            elif char == '-':self.add(TT_MINUS,self.line);self.advance()
+           
+           #---Strings----------------------
             elif char in ('"',"'"):
                 string_initialiser = char
                 self.advance()
                 read_strings(self,string_initialiser)
             
-            elif char.isalpha() or '_' in char:
+            #---Keywords or Identifiers---------
+            elif char in ALPHABETS or '_' in char:
                 read_ident(self)
             
-            elif char.isnumeric():
+            #---Numbers----------------------
+            elif char in NUMBERS:
                 read_numbers(self)
 
+
+    #---EOF Token------------------------------------------------------------------
         self.add(TT_EOF,self.line)            
         return self.tokens
-            
-        
-        
-        
-        
-    
-        
-                
-
 
 if __name__ == "__main__":
-    source = """ _hello apple_man 192 3..14 """
+    source = """
+func main(){
+out("hello world")
+}
+"""
     lexer = Lexer(source)
     tokens = lexer.tokenise()
     for tok in tokens:
-        print(tok)
+        print(f"- {tok}")

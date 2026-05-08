@@ -70,6 +70,10 @@ KEYWORDS = {
     'try', 'catch', 'drop'
 }
 
+NUMBERS = "1234567890"
+ALPHABETS = "ABCDCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz"
+SYMBOLS = "!@#$%^&*()<>?/:;|+=-_`~"
+
 class Tokens:
     def __init__(self,token_type,line: int,token_value = None,column = None):
         self.token_type = token_type
