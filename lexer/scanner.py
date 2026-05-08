@@ -54,7 +54,12 @@ class Lexer:
         """
         Main tokeniser which classifies characters as their specific category they belong too.
         """
+        
+        #---String Reader----------------------------------------------------------------------------------------
         def read_strings(self,string_initialiser):
+            """
+            Called when the lexer spots a " or a ', and then continues reading till another of the like type is spotted.
+            """
             result = []
 
             while self.current_char() is not None and self.current_char() != string_initialiser:
@@ -67,7 +72,11 @@ class Lexer:
             text = "".join(result)
             self.add(TT_STR,self.line,text)
         
+        #---Ident/kWord Reader----------------------------------------------------------------------------------
         def read_ident(self):
+            """
+            Checks if a given sequence of characters is a keyword or and identifier.
+            """
             result = []
             while self.current_char() is not None and self.current_char() not in ('',' ','\t', '\n'):
                 result.append(self.advance())
@@ -76,7 +85,24 @@ class Lexer:
                 self.add(TT_KEYWORD,self.line,text)
             else:
                 self.add(TT_IDENT,self.line,text)
-        
+
+        #---Read Numbers----------------------------------------------------------------------------------------
+        def read_numbers(self):
+            """Checks if a given sequence of numbers is a float or an integer."""
+            result = []
+            while self.current_char() in "1234567890.":
+                result.append(self.advance())
+            
+            number = "".join(result)
+            dot_count = number.count('.')
+            
+            if dot_count > 1:
+                raise Exception(f"Invalid number: too many dots in '{number}'")
+            elif dot_count == 1:
+                self.add(TT_FLOAT, self.line, number)
+            else:
+                self.add(TT_INT, self.line, number)
+#---Main Tokenise Loop---------------------------------------------------------------------------------------------------
         while self.current_char() is not None:
             char = self.current_char()
 
@@ -180,7 +206,10 @@ class Lexer:
             
             elif char.isalpha() or '_' in char:
                 read_ident(self)
-        
+            
+            elif char.isnumeric():
+                read_numbers(self)
+
         self.add(TT_EOF,self.line)            
         return self.tokens
             
@@ -194,7 +223,7 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    source = """ _hello apple_man """
+    source = """ _hello apple_man 192 3..14 """
     lexer = Lexer(source)
     tokens = lexer.tokenise()
     for tok in tokens:
