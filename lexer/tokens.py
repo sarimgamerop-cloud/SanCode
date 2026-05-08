@@ -71,7 +71,7 @@ KEYWORDS = {
 }
 
 class Tokens:
-    def __init__(self,token_type,line: int,column,token_value = None):
+    def __init__(self,token_type,line: int,token_value = None,column = None):
         self.token_type = token_type
         self.token_value = token_value 
         self.line = line

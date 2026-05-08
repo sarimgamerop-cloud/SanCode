@@ -54,6 +54,29 @@ class Lexer:
         """
         Main tokeniser which classifies characters as their specific category they belong too.
         """
+        def read_strings(self,string_initialiser):
+            result = []
+
+            while self.current_char() is not None and self.current_char() != string_initialiser:
+                if self.current_char() == '\n':
+                    self.line += 1
+                    result.append(self.advance())
+                else:
+                    result.append(self.advance())
+            self.advance()
+            text = "".join(result)
+            self.add(TT_STR,self.line,text)
+        
+        def read_ident(self):
+            result = []
+            while self.current_char() is not None and self.current_char() not in ('',' ','\t', '\n'):
+                result.append(self.advance())
+            text = "".join(result)
+            if text in KEYWORDS:
+                self.add(TT_KEYWORD,self.line,text)
+            else:
+                self.add(TT_IDENT,self.line,text)
+        
         while self.current_char() is not None:
             char = self.current_char()
 
@@ -153,23 +176,25 @@ class Lexer:
             elif char in ('"',"'"):
                 string_initialiser = char
                 self.advance()
-
-                result = []
-                while self.current_char() is not None and self.current_char().isalnum():
-                    result.append(self.advance())
-                    result.append(self.advance())
-                    
-                text = ''.join(result)
-                print(text)
-                    
-
+                read_strings(self,string_initialiser)
             
-
+            elif char.isalpha() or '_' in char:
+                read_ident(self)
+        
         self.add(TT_EOF,self.line)            
         return self.tokens
+            
+        
+        
+        
+        
+    
+        
+                
+
 
 if __name__ == "__main__":
-    source = """ "hel*lo" """
+    source = """ _hello apple_man """
     lexer = Lexer(source)
     tokens = lexer.tokenise()
     for tok in tokens:
