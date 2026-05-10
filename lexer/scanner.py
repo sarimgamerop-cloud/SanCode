@@ -215,9 +215,9 @@ class Lexer:
                         self.advance()
                         self.advance()
                     
-                    self.advance()
-                    self.advance()
-                    print("Finished")
+                    # print("")
+                    # self.advance()
+                    # self.advance()
             #---Slash------------------------
             elif char == '/':
                 if self.peek() == '/':
@@ -249,7 +249,7 @@ class Lexer:
                     raise UnterminatedStringLiteral(self.line,self.col)
                 
             #---Keywords or Identifiers---------
-            elif char in ALPHABETS or '_' in char:
+            elif char in ALPHABETS or char == '_':
                 read_ident(self)
             
             #---Numbers----------------------
@@ -264,11 +264,6 @@ class Lexer:
         self.add(TT_EOF,self.line)            
         return self.tokens
 
-if __name__ == "__main__":
-    source = """
-  
-"""
-    lexer = Lexer(source)
-    tokens = lexer.tokenise()
-    for tok in tokens:
-        print(f"- {tok}")
+#########################################################################################
+#                                   Finished Lexer
+#########################################################################################
