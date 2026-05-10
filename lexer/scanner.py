@@ -8,8 +8,13 @@ from tokens import *
 
 #---Error Class-------------------------------------------------------------------
 class InvalidTokenError(Exception):
-    def __init__(self,char,line):
-        super().__init__(f"group source.fatal: private unrecognized malformed token found while tokenising '{char}',\n\t\t---> lexer exited with error, line : {line}")
+    def __init__(self,char,line,col):
+        super().__init__(f"group source.fatal:: private unrecognized malformed token found while tokenising '{char}',\n\t\t---> lexer exited with error[#LEX001], line:col {line}:{col}")
+
+class UnterminatedStringLiteral(Exception):
+    def __init__(self,line,col):
+        super().__init__(f"indiv source.recursive:: unterminated string literal,\n\t\t---> lexer exited with error[#LEX002], line:col {line}:{col}")
+
 
 #---Lexer Class ------------------------------------------------------------------
 class Lexer:
@@ -17,6 +22,7 @@ class Lexer:
         self.source = source 
         self.line = 1
         self.pos = 0
+        self.col = 0
         self.tokens = []
 
     def __repr__(self) -> None:
@@ -37,6 +43,7 @@ class Lexer:
         """
         char = self.source[self.pos]
         self.pos += 1
+        self.col += 1
         return char
 
     def peek(self):
@@ -72,9 +79,13 @@ class Lexer:
                     result.append(self.advance())
                 else:
                     result.append(self.advance())
-            self.advance()
-            text = "".join(result)
-            self.add(TT_STR,self.line,text)
+            if self.current_char() == string_initialiser:
+                self.advance()
+                text = "".join(result)
+                self.add(TT_STR,self.line,text)
+            else:
+                raise UnterminatedStringLiteral(self.line,self.col)
+            
         
         #---Ident/kWord Reader----------------------------------------------------------------------------------
         def read_ident(self):
@@ -114,6 +125,7 @@ class Lexer:
             if char == "\n":
                 self.advance()
                 self.line += 1
+                self.col = 1
 
             #---Spaces----------------------
             elif char.isspace():
@@ -228,7 +240,7 @@ class Lexer:
                 read_numbers(self)
             
             else:
-                raise InvalidTokenError(char,self.line)
+                raise InvalidTokenError(char,self.line,self.col)
 
 
     #---EOF Token------------------------------------------------------------------
@@ -236,9 +248,8 @@ class Lexer:
         return self.tokens
 
 if __name__ == "__main__":
-    source = """func main(){
-out(_123) $
-}
+    source = """
+print hello
 """
     lexer = Lexer(source)
     tokens = lexer.tokenise()
