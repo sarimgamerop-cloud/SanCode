@@ -72,7 +72,7 @@ KEYWORDS = {
 
 NUMBERS = "1234567890"
 ALPHABETS = "ABCDCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz"
-SYMBOLS = "!@#$%^&*()<>?/:;|+=-`~"
+SYMBOLS = """ !@#$%^&*()<>?/:;|+=-`~'" """
 
 class Tokens:
     def __init__(self,token_type,line: int,token_value = None,column = None):

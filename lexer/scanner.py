@@ -9,12 +9,23 @@ from tokens import *
 #---Error Class-------------------------------------------------------------------
 class InvalidTokenError(Exception):
     def __init__(self,char,line,col):
-        super().__init__(f"group source.fatal:: private unrecognized malformed token found while tokenising '{char}',\n\t\t---> lexer exited with error[#LEX001], line:col {line}:{col}")
+        super().__init__(f"class source.fatal:: private unrecognized malformed token found while tokenising '{char}',\n\t\t---> lexer exited with error[#LEX001], line:col {line}:{col}")
 
 class UnterminatedStringLiteral(Exception):
     def __init__(self,line,col):
-        super().__init__(f"indiv source.recursive:: unterminated string literal,\n\t\t---> lexer exited with error[#LEX002], line:col {line}:{col}")
+        super().__init__(f"str source.recursive:: unterminated string literal,\n\t\t---> lexer exited with error[#LEX002], line:col {line}:{col}")
 
+class InvalidIdentifier(Exception):
+    def __init__(self, char, line,col):
+        super().__init__(f"ident source.fatal:: invalid identifier arguements:: <class 'int'> followed by '{char}',\n\t\t---> lexer exited with error[#LEX003], line:col {line}:{col}")
+
+class InvalidFloatLiteral(Exception):
+    def __init__(self, number, line,col):
+        super().__init__(f"float source.recursive:: invalid float format passed '{number}':: nested floats initialised and not valid,\n\t\t---> lexer exited with error[#LEX004], line:col {line}:{col}")
+
+class UnintialisedStringLiteral(Exception):
+    def __init__(self,line,col):
+        super().__init__(f"str source.recursive:: string literal not initialised,\n\t\t---> lexer exited with error[#LEX002], line:col {line}:{col}")
 
 #---Lexer Class ------------------------------------------------------------------
 class Lexer:
@@ -105,14 +116,17 @@ class Lexer:
         def read_numbers(self):
             """Checks if a given sequence of numbers is a float or an integer."""
             result = []
-            while self.current_char() in "1234567890.":
-                result.append(self.advance())
+            while self.current_char() is not None and self.current_char() in "1234567890.":
+                if self.peek() not in ALPHABETS:
+                    result.append(self.advance())
+                else:
+                    raise InvalidIdentifier(self.peek(),self.line,self.col)
             
             number = "".join(result)
             dot_count = number.count('.')
             
             if dot_count > 1:
-                raise Exception(f"Invalid number: too many dots in '{number}'")
+                raise InvalidFloatLiteral(number,self.line,self.col)
             elif dot_count == 1:
                 self.add(TT_FLOAT, self.line, number)
             else:
@@ -227,10 +241,13 @@ class Lexer:
            
            #---Strings----------------------
             elif char in ('"',"'"):
-                string_initialiser = char
-                self.advance()
-                read_strings(self,string_initialiser)
-            
+                if self.peek() not in ALPHABETS or self.peek() not in NUMBERS or self.peek() not in SYMBOLS:
+                    string_initialiser = char
+                    self.advance()
+                    read_strings(self,string_initialiser)
+                else:
+                    raise UnterminatedStringLiteral(self.line,self.col)
+                
             #---Keywords or Identifiers---------
             elif char in ALPHABETS or '_' in char:
                 read_ident(self)
@@ -249,7 +266,7 @@ class Lexer:
 
 if __name__ == "__main__":
     source = """
-print hello
+  
 """
     lexer = Lexer(source)
     tokens = lexer.tokenise()
