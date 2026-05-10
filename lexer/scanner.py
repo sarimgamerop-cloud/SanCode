@@ -6,6 +6,10 @@
 #--------------------------------------------------------------------------------------
 from tokens import *
 
+#---Error Class-------------------------------------------------------------------
+class InvalidTokenError(Exception):
+    def __init__(self,char,line):
+        super().__init__(f"group source.fatal: private unrecognized malformed token found while tokenising '{char}',\n\t\t---> lexer exited with error, line : {line}")
 
 #---Lexer Class ------------------------------------------------------------------
 class Lexer:
@@ -222,6 +226,9 @@ class Lexer:
             #---Numbers----------------------
             elif char in NUMBERS:
                 read_numbers(self)
+            
+            else:
+                raise InvalidTokenError(char,self.line)
 
 
     #---EOF Token------------------------------------------------------------------
@@ -229,9 +236,8 @@ class Lexer:
         return self.tokens
 
 if __name__ == "__main__":
-    source = """
-func main(){
-out("hello world")
+    source = """func main(){
+out(_123) $
 }
 """
     lexer = Lexer(source)
