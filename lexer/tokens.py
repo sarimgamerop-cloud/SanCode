@@ -71,7 +71,7 @@ KEYWORDS = {
 }
 
 NUMBERS = "1234567890"
-ALPHABETS = "ABCDCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz"
+ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 SYMBOLS = """ !@#$%^&*()<>?/:;|+=-`~'" """
 
 class Tokens:

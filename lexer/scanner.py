@@ -6,6 +6,10 @@
 #--------------------------------------------------------------------------------------
 from tokens import *
 
+
+
+
+
 #---Error Class-------------------------------------------------------------------
 class InvalidTokenError(Exception):
     def __init__(self,char,line,col):
@@ -27,6 +31,10 @@ class UnintialisedStringLiteral(Exception):
     def __init__(self,line,col):
         super().__init__(f"str source.recursive:: string literal not initialised,\n\t\t---> lexer exited with error[#LEX002], line:col {line}:{col}")
 
+
+
+
+
 #---Lexer Class ------------------------------------------------------------------
 class Lexer:
     def __init__(self,source) -> None:
@@ -35,10 +43,11 @@ class Lexer:
         self.pos = 0
         self.col = 0
         self.tokens = []
-
     def __repr__(self) -> None:
-        return f"Token({Tokens.token_type}:{Tokens.token_value})"
+        return f"Token({Tokens.token_type}:{Tokens.token_value})" # type: ignore
 
+    
+    #---Current Character------------------------------------------------------------
     def current_char(self):
         """
         Returns which character the pointer is at.
@@ -48,6 +57,8 @@ class Lexer:
         else:
             return None
 
+
+    #---Advance-------------------------------------------------------------------------
     def advance(self):
         """
         Stores & returns the current character and moves forward.
@@ -57,6 +68,8 @@ class Lexer:
         self.col += 1
         return char
 
+
+    #---Peek-----------------------------------------------------------------------------
     def peek(self):
         """
         Returns the character next to the pointer but self.pod doesn't increase.
@@ -66,18 +79,22 @@ class Lexer:
         else:
             return None
 
+    #---Add---------------------------------------------------------------------------
     def add(self,token_type, line,token_value = None):
         """
         Appends the token objects into the list.
         """
         self.tokens.append(Tokens(token_type,line,token_value))
 
+
+    #---Tokenise-----------------------------------------------------------------------
     def tokenise(self):
         """
         Main tokeniser which classifies characters as their specific category they belong too.
         """
         
-        #---String Reader----------------------------------------------------------------------------------------
+#=======================================================================================
+        #---String Reader------------------------------------------------------
         def read_strings(self,string_initialiser):
             """
             Called when the lexer spots a " or a ', and then continues reading till another of the like type is spotted.
@@ -97,8 +114,8 @@ class Lexer:
             else:
                 raise UnterminatedStringLiteral(self.line,self.col)
             
-        
-        #---Ident/kWord Reader----------------------------------------------------------------------------------
+#=======================================================================================        
+        #---Ident/kWord Reader----------------------------------------------------------
         def read_ident(self):
             """
             Checks if a given sequence of characters is a keyword or and identifier.
@@ -112,7 +129,8 @@ class Lexer:
             else:
                 self.add(TT_IDENT,self.line,text)
 
-        #---Read Numbers----------------------------------------------------------------------------------------
+#=======================================================================================
+        #---Read Numbers-----------------------------------------------------------------
         def read_numbers(self):
             """Checks if a given sequence of numbers is a float or an integer."""
             result = []
@@ -131,7 +149,10 @@ class Lexer:
                 self.add(TT_FLOAT, self.line, number)
             else:
                 self.add(TT_INT, self.line, number)
-#---Main Tokenise Loop---------------------------------------------------------------------------------------------------
+
+
+#=======================================================================================
+#---Main Tokenise Loop-------------------------------------------------------
         while self.current_char() is not None:
             char = self.current_char()
 
@@ -142,7 +163,7 @@ class Lexer:
                 self.col = 1
 
             #---Spaces----------------------
-            elif char.isspace():
+            elif char.isspace(): # type: ignore
                 self.advance()
             
             #---Equals----------------------
@@ -205,43 +226,43 @@ class Lexer:
                     self.add(TT_STAR,self.line)
                     self.advance()
 
-            #---Comment---------------------
-            elif char == '/':
-                if self.peek() == '*':
-                    self.advance()
-                    self.advance()
-
-                    while self.current_char() is not None and self.current_char() != '*' and self.peek() != '/':
-                        self.advance()
-                        self.advance()
                     
-                    # print("")
-                    # self.advance()
-                    # self.advance()
             #---Slash------------------------
             elif char == '/':
                 if self.peek() == '/':
                     self.advance()
                     while self.current_char() is not None and self.current_char() != '\n':
                         self.advance()
-                    
+                
+                elif self.peek() == '*':
+                    self.advance()
+                    self.advance()
+
+                    while self.current_char() is not None and self.current_char() != '*' and self.peek() != '/':
+                        self.advance()
+                    self.advance()
+                    self.advance()
                 else:
                     self.add(TT_SLASH,self.line)
                     self.advance()
             
-             #---Single Chars----------------------------------------------
+#=======================================================================================
+            #---Single Chars----------------------------------------------
             elif char == '(':self.add(TT_LPAREN,self.line);self.advance()
             elif char == ')':self.add(TT_RPAREN,self.line);self.advance()
             elif char == '[':self.add(TT_LBRACKET,self.line);self.advance()
-            elif char == ']':self.add(TT_LBRACKET,self.line);self.advance()
+            elif char == ']':self.add(TT_RBRACKET,self.line);self.advance()
             elif char == '{':self.add(TT_LBRACE,self.line);self.advance()
             elif char == '}':self.add(TT_RBRACE,self.line);self.advance()
             elif char == '+':self.add(TT_PLUS,self.line);self.advance()
             elif char == '-':self.add(TT_MINUS,self.line);self.advance()
+            elif char == '.':self.add(TT_DOT,self.line);self.advance()
+            elif char == ',':self.add(TT_COMMA,self.line);self.advance()
+            elif char == ';':self.advance()
            
            #---Strings----------------------
             elif char in ('"',"'"):
-                if self.peek() not in ALPHABETS or self.peek() not in NUMBERS or self.peek() not in SYMBOLS:
+                if self.peek() not in ALPHABETS or self.peek() not in NUMBERS or self.peek() not in SYMBOLS: # type: ignore
                     string_initialiser = char
                     self.advance()
                     read_strings(self,string_initialiser)
@@ -249,11 +270,11 @@ class Lexer:
                     raise UnterminatedStringLiteral(self.line,self.col)
                 
             #---Keywords or Identifiers---------
-            elif char in ALPHABETS or char == '_':
+            elif char in ALPHABETS or char == '_': # type: ignore
                 read_ident(self)
             
             #---Numbers----------------------
-            elif char in NUMBERS:
+            elif char in NUMBERS: # type: ignore
                 read_numbers(self)
             
             else:
@@ -267,3 +288,17 @@ class Lexer:
 #########################################################################################
 #                                   Finished Lexer
 #########################################################################################
+
+
+
+#---Testing---------------------------------------------------------------------
+source = """
+, . 
+3.14
+"""
+if __name__ == '__main__':
+    lexer = Lexer(source)
+    tokens = lexer.tokenise()
+    for tok in tokens:
+        print(tok)
+#-------------------------------------------------------------------------------
