@@ -1,32 +1,33 @@
-from lexer import Lexer
+class InvalidFilePath(Exception):
+    def __init__(self,filepath):
+        super().__init__(f"source.fatal :: the file you requested to execute doesn't exist the provided directory ---> {filepath}")
+    
+class UndefinedFileExtension(Exception):
+    def __init__(self,filepath):
+        super().__init__(f"source.fatal :: arc only supports '.arc' file extensions please recheck {filepath} ---> {filepath}")
 
-# invalid file type error class
-class InvalidFileType(Exception):
-    def __init__(self,message):
-        super().__init__(f"{message}")
+from lexer.scanner import Lexer
 
-# invalid command error class
-class InvalidCommand(Exception):
-    def __init__(self,message):
-        super().__init__(f"{message}")
-
-#infinite loop for infinite number of inputs
 while True:
-    userInput = input("~$ : ")
-    userInput = userInput.strip().split() #strip and split to parse 
-    name = userInput[0] #store the first word in variable
+    command = input("~$ : ")
+    command = command.strip().split()
+    command_name = command[1]
 
-    if name == 'arc' and userInput[1] == 'exec': # if the command starts with 'arc exec'
-        filepath = userInput[2] #get the file path or name
-        if filepath.endswith('.arc'): # check for correct file extension
-            with open(filepath,'r') as file: #open the file
-                source = file.read()  #store the source code in source
-                lexer = Lexer(source) #call the lexer class from lexer.py
-                tokens = lexer.tokenize() # tokenise the lexer
-                for tok in tokens: 
-                    print(tok) #print the tokens
-        else:
-            raise InvalidFileType(f"unsupported  file type - couldn't parse '{filepath}'")#
+    match command_name:
+        case "exec": #arc exec t.arc
+            filepath = command[2]
+            if filepath.endswith(".arc"):
+                try:
+                    with open(filepath,'r') as source_file:
+                        source = source_file.read()
+                        _lexer = Lexer(source)
+                        _tokens = _lexer.tokenise()
 
-    else:
-        raise InvalidCommand(f"command not recognised - please recheck")
+                        for tok in _tokens:
+                            print(tok)
+
+                except FileNotFoundError:
+                    raise InvalidFilePath(filepath)
+            else:
+                raise UndefinedFileExtension(filepath)
+                    

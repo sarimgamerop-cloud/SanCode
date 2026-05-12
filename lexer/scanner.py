@@ -4,7 +4,7 @@
 #===========================================================================================
 
 #--------------------------------------------------------------------------------------
-from tokens import *
+from .tokens import *
 
 
 
@@ -259,6 +259,7 @@ class Lexer:
             elif char == '.':self.add(TT_DOT,self.line);self.advance()
             elif char == ',':self.add(TT_COMMA,self.line);self.advance()
             elif char == ';':self.advance()
+            elif char == ':':self.add(TT_COLON,self.line);self.advance()
            
            #---Strings----------------------
             elif char in ('"',"'"):

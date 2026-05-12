@@ -61,7 +61,7 @@ TT_EOF = "EOF"
 
 #---Keywords-------------------------------------------------------------
 KEYWORDS = {
-    'dec', 'const', 'func', 'return',
+    'dec', 'const', 'func', 'return','expr',
     'if', 'else', 'elif',
     'loop', 'for', 'in', 'break', 'skip',
     'out', 'prompt',
