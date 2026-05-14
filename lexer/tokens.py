@@ -64,8 +64,8 @@ KEYWORDS = {
     'dec', 'const', 'func', 'return','expr',
     'if', 'else', 'elif',
     'loop', 'for', 'in', 'break', 'skip',
-    'out', 'prompt',
-    'true', 'false', 'null',
+    'stdout', 'scan',
+    'null',
     'use', 'type', 'init', 'ext',
     'try', 'catch', 'drop'
 }

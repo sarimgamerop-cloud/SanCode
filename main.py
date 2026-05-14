@@ -10,6 +10,7 @@ from lexer.scanner import Lexer
 
 while True:
     command = input("~$ : ")
+    print("+++++++++++++++++++++++++++")
     command = command.strip().split()
     command_name = command[1]
 
