@@ -82,16 +82,16 @@ SYMBOLS = """ !@#$%^&*()<>?/:;|+=-`~'" """
 
 class Tokens:
     def __init__(self,type_,line: int,token_value = None,column = None):
-        self.token_type = type_
+        self.type_ = type_
         self.token_value = token_value 
         self.line = line
         self.column = column
 
     def __repr__(self):
         if self.token_value:
-            return f"Token({self.token_type}:{self.token_value} - ln,{self.line})"
+            return f"Token({self.type_}:{self.token_value} - ln,{self.line})"
         else:
-            return f"Token({self.token_type} -> ln,{self.line})"
+            return f"Token({self.type_} -> ln,{self.line})"
 
 
 #---Error Class-------------------------------------------------------------------
