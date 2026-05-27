@@ -252,61 +252,61 @@ class Lexer:
             #---Equals----------------------
             elif char == '=':
                 if self.peek() == '=':
-                    self.add(TT_EQEQ,self.line)
+                    self.add(TT_EQEQ,self.line,'==')
                     self.advance()
                     self.advance()
                 else:
-                    self.add(TT_EQ,self.line)
+                    self.add(TT_EQ,self.line,'=')
                     self.advance()
             #---Greater--------------------
             elif char == '>':
                 if self.peek() == '=':
-                    self.add(TT_GTE,self.line)
+                    self.add(TT_GTE,self.line,">=")
                     self.advance()
                     self.advance()
                 else:
-                    self.add(TT_GT,self.line)
+                    self.add(TT_GT,self.line,">")
                     self.advance()
             
             #---Lesser------------------------
             elif char == '<':
                 if self.peek() == '=':
-                    self.add(TT_LTE,self.line)
+                    self.add(TT_LTE,self.line,'<=')
                     self.advance()
                     self.advance()
                 else:
-                    self.add(TT_LT,self.line)
+                    self.add(TT_LT,self.line,'<')
                     self.advance()
             
             #---Bang-------------------------
             elif char == '!':
                 if self.peek() == '=':
-                    self.add(TT_BANGEQ,self.line)
+                    self.add(TT_BANGEQ,self.line,'!=')
                     self.advance();self.advance()
                 else:
-                    self.add(TT_BANG,self.line)
+                    self.add(TT_BANG,self.line,'!')
                     self.advance()
             
             #---And--------------------------
             elif char == '&' and self.peek() == '&':
-                self.add(TT_AND,self.line)
+                self.add(TT_AND,self.line,'&&')
                 self.advance()
                 self.advance()
             
             #---Or--------------------------
             elif char == "|" and self.peek() == '|':
-                self.add(TT_OR,self.line)
+                self.add(TT_OR,self.line,'||')
                 self.advance()
                 self.advance()
             
             #---Star-------------------------
             elif char == '*':
                 if self.peek() == '*':
-                    self.add(TT_STARSTAR,self.line)
+                    self.add(TT_STARSTAR,self.line,'**')
                     self.advance()
                     self.advance()
                 else:
-                    self.add(TT_STAR,self.line)
+                    self.add(TT_STAR,self.line,'*')
                     self.advance()
 
                     
@@ -326,23 +326,23 @@ class Lexer:
                     self.advance()
                     self.advance()
                 else:
-                    self.add(TT_SLASH,self.line)
+                    self.add(TT_SLASH,self.line,'/')
                     self.advance()
             
 #=======================================================================================
             #---Single Chars----------------------------------------------
-            elif char == '(':self.add(TT_LPAREN,self.line);self.advance()
-            elif char == ')':self.add(TT_RPAREN,self.line);self.advance()
-            elif char == '[':self.add(TT_LBRACKET,self.line);self.advance()
-            elif char == ']':self.add(TT_RBRACKET,self.line);self.advance()
-            elif char == '{':self.add(TT_LBRACE,self.line);self.advance()
-            elif char == '}':self.add(TT_RBRACE,self.line);self.advance()
-            elif char == '+':self.add(TT_PLUS,self.line);self.advance()
-            elif char == '-':self.add(TT_MINUS,self.line);self.advance()
-            elif char == '.':self.add(TT_DOT,self.line);self.advance()
-            elif char == ',':self.add(TT_COMMA,self.line);self.advance()
+            elif char == '(':self.add(TT_LPAREN,self.line,'(');self.advance()
+            elif char == ')':self.add(TT_RPAREN,self.line,')');self.advance()
+            elif char == '[':self.add(TT_LBRACKET,self.line,'[');self.advance()
+            elif char == ']':self.add(TT_RBRACKET,self.line,']');self.advance()
+            elif char == '{':self.add(TT_LBRACE,self.line,'{');self.advance()
+            elif char == '}':self.add(TT_RBRACE,self.line,'}');self.advance()
+            elif char == '+':self.add(TT_PLUS,self.line,'+');self.advance()
+            elif char == '-':self.add(TT_MINUS,self.line,'-');self.advance()
+            elif char == '.':self.add(TT_DOT,self.line,'.');self.advance()
+            elif char == ',':self.add(TT_COMMA,self.line,',');self.advance()
             elif char == ';':self.advance()
-            elif char == ':':self.add(TT_COLON,self.line);self.advance()
+            elif char == ':':self.add(TT_COLON,self.line,':');self.advance()
            
            #---Strings----------------------
             elif char in ('"',"'"):
