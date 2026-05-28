@@ -64,14 +64,15 @@ TT_RBRACKET = "RBRACKET"
 TT_IDENT = "IDENT"
 TT_KEYWORD = "KEYWORD"
 TT_EOF = "EOF"
+TT_NEWLINE = "NEWLINE"
 
 #---Keywords-------------------------------------------------------------
 KEYWORDS = {
-    'dec', 'const', 'func', 'return','expr',
+    'dec', 'const', 'func', 'return',
     'if', 'else', 'elif',
     'loop', 'for', 'in', 'break', 'skip',
     'stdout', 'scan',
-    'null',
+    'Null',
     'use', 'type', 'init', 'ext',
     'try', 'catch', 'drop'
 }

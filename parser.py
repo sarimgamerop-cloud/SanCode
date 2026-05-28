@@ -12,7 +12,7 @@ class Parser:
         if self.pos < len(self.tokens):
             self.current_token = self.tokens[self.pos]
         else:
-            None 
+            self.current_token = None
     
     def peek(self):
         if (self.pos + 1) < (len(self.tokens)):
@@ -29,7 +29,11 @@ class Parser:
             self.advance()
             return tok 
         else:
-            raise Exception("Unexpected token found!!")
+            line = getattr(self.current_token, 'line', '?')
+            col = getattr(self.current_token, 'col', '?')
+            got = self.current_token.token_value
+            
+            raise UnexpectedTokenError(expected=token_types, got=got, line=line, col=col)
     
     def parse_factor(self):
         if self.match([TT_PLUS,TT_MINUS,TT_BANG]):
@@ -47,14 +51,40 @@ class Parser:
             self.advance()
             return BooleanLiteral(value)
         
+        elif self.match([TT_STR]):
+            value = self.current_token.token_value
+            self.advance()
+            return StringLiteral(value)
+        
         elif self.match([TT_LPAREN]):
             self.expect([TT_LPAREN])
             expression_node = self.parse_expr()
             self.expect([TT_RPAREN])
             return expression_node
         
+        elif self.current_token and self.current_token.token_value == 'Null':
+            self.advance()
+            return NullLiteral()
+            
+        
         elif self.match([TT_IDENT]):
             variable = self.expect([TT_IDENT])
+            
+            if self.current_token and self.current_token.type_ == TT_LPAREN:
+                self.expect([TT_LPAREN]) 
+                
+                args = []
+                if self.current_token and self.current_token.type_ != TT_RPAREN:
+
+                    args.append(self.parse_comp_expr())
+
+                    while self.current_token and self.current_token.type_ == TT_COMMA:
+                        self.expect([TT_COMMA])
+                        args.append(self.parse_comp_expr())
+                        
+                self.expect([TT_RPAREN]) 
+                return FuncCallNode(variable, args)
+            
             return VarAccessNode(variable)
     
     def parse_power(self):
@@ -102,4 +132,93 @@ class Parser:
             self.expect([TT_EQ])
             var_value_node = self.parse_comp_expr()
             return VarAssignNode(var_name_token,var_value_node,is_const)
+        
+        elif self.current_token and self.current_token.token_value == 'if':
+            self.expect([self.current_token.type_])
+            self.expect([TT_LPAREN])
+            condition = self.parse_comp_expr()
+            self.expect([TT_RPAREN])
+            if_body = self.parse_blocks()
+            else_body = None 
+            if self.current_token and self.current_token.token_value == 'else':
+                self.expect([self.current_token.type_])
+                else_body = self.parse_blocks()
+            return IfNode(condition,if_body,else_body)
+        
+        elif self.current_token and self.current_token.token_value == 'while':
+            self.expect([self.current_token.type_])
+            self.expect([TT_LPAREN])
+            condition = self.parse_comp_expr()
+            self.expect([TT_RPAREN])
+            while_body = self.parse_blocks()
+            return WhileNode(condition,while_body)
+        
+        elif self.current_token and self.current_token.token_value == 'func':
+            self.expect(self.current_token.type_)
+            func_name = self.current_token.token_value
+            self.expect([TT_IDENT])
+            self.expect(TT_LPAREN)
+            params = []
+            if self.current_token and self.current_token.type_ != TT_RPAREN:
+                params.append(self.expect([TT_IDENT]))
+                while self.current_token and self.current_token.type_ == TT_COMMA:
+                    self.expect([TT_COMMA])
+                    params.append(self.expect([TT_IDENT]))  
+            self.expect([TT_RPAREN])
+            func_body = self.parse_blocks()
+            return FuncDefNode(func_name,params,func_body)
+        
+        elif self.current_token and self.current_token.token_value == 'return':
+            self.expect([self.current_token.type_])
+            value = None
+            if self.current_token and self.current_token.type_ not in (TT_EOF,TT_RBRACE):
+                value = self.parse_comp_expr()
+            return ReturnNode(value)
+
+        elif self.current_token and self.current_token.token_value == 'break':
+            self.advance()
+            return BreakNode()
+        
+        elif self.current_token and self.current_token.token_value == 'stdout':
+            self.expect([self.current_token.type_])
+            self.expect([TT_LPAREN])
+            value = self.parse_comp_expr()
+            self.expect([TT_RPAREN])
+            return StdOutNode(value)
+        
+        elif self.current_token and self.current_token.token_value == 'scan':
+            self.expect([self.current_token.type_])
+            self.expect(TT_LPAREN)
+            variable = self.current_token.token_value
+            self.expect([TT_IDENT])
+            self.expect([TT_RPAREN])
+            return ScanNode(variable)
+        
+        else:
+            expr = self.parse_comp_expr()
+            return expr
+    
+    def parse_statements_list(self):
+        statements = []
+        while self.current_token and self.current_token.type_ != TT_RBRACE:
+            stmt = self.parse_statements()
+            if stmt:
+                statements.append(stmt)
+        return statements
+
+    def parse_blocks(self):
+        if self.current_token and self.current_token.type_ == TT_LBRACE:
+                self.expect([TT_LBRACE])
+                statements = self.parse_statements_list()
+                self.expect([TT_RBRACE])
+                return statements
+
+    def parse(self):
+        statements = []
+        while self.current_token.type_ != TT_EOF:
+            stmt = self.parse_statements()
+            if stmt:
+                statements.append(stmt)
+        return ProgramNode(statements)
+
 
