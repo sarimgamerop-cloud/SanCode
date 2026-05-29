@@ -29,11 +29,7 @@ class Parser:
             self.advance()
             return tok 
         else:
-            line = getattr(self.current_token, 'line', '?')
-            col = getattr(self.current_token, 'col', '?')
-            got = self.current_token.token_value
-            
-            raise UnexpectedTokenError(expected=token_types, got=got, line=line, col=col)
+            raise Exception("Unexpected Tokens!!! ")
     
     def parse_factor(self):
         if self.match([TT_PLUS,TT_MINUS,TT_BANG]):
@@ -154,10 +150,10 @@ class Parser:
             return WhileNode(condition,while_body)
         
         elif self.current_token and self.current_token.token_value == 'func':
-            self.expect(self.current_token.type_)
+            self.expect([self.current_token.type_])
             func_name = self.current_token.token_value
             self.expect([TT_IDENT])
-            self.expect(TT_LPAREN)
+            self.expect([TT_LPAREN])
             params = []
             if self.current_token and self.current_token.type_ != TT_RPAREN:
                 params.append(self.expect([TT_IDENT]))

@@ -82,17 +82,17 @@ ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 SYMBOLS = """ !@#$%^&*()<>?/:;|+=-`~'" """
 
 class Tokens:
-    def __init__(self,type_,line: int,token_value = None,column = None):
+    def __init__(self,type_,line: int,token_value = None,col = None):
         self.type_ = type_
         self.token_value = token_value 
         self.line = line
-        self.column = column
+        self.col = col
 
     def __repr__(self):
         if self.token_value:
-            return f"Token({self.type_}:{self.token_value} - ln,{self.line})"
+            return f"Token({self.type_}:{self.token_value} - {self.line}:{self.col})"
         else:
-            return f"Token({self.type_} -> ln,{self.line})"
+            return f"Token({self.type_} -> ln,{self.line};{self.col})"
 
 
 #---Error Class-------------------------------------------------------------------
@@ -166,7 +166,7 @@ class Lexer:
         """
         Appends the token objects into the list.
         """
-        self.tokens.append(Tokens(token_type,line,token_value))
+        self.tokens.append(Tokens(token_type,line,token_value,self.col))
 
 
     #---Tokenise-----------------------------------------------------------------------

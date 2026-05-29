@@ -3,7 +3,11 @@ from scanner import *
 from parser import Parser
 
 source = """
-Null
+func add(a,b){
+    if (name == "apple"){
+    scan(FartHole);
+    }
+}
 """
 # source = """
 # 8/9+5*8
