@@ -211,7 +211,7 @@ class Parser:
 
     def parse(self):
         statements = []
-        while self.current_token.type_ != TT_EOF:
+        while self.current_token.type_ != TT_EOF or self.current_token is None:
             stmt = self.parse_statements()
             if stmt:
                 statements.append(stmt)
