@@ -4,9 +4,8 @@ from parser import Parser
 
 source = """
 func add(a,b){
-    if (name == "apple"){
-    scan(FartHole);
-    }
+    dec x = 1222225
+    x = 12
 }
 """
 # source = """

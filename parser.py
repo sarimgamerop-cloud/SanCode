@@ -29,7 +29,7 @@ class Parser:
             self.advance()
             return tok 
         else:
-            raise Exception("Unexpected Tokens!!! ")
+            raise Exception(f"Unexpected Tokens!!! {self.current_token}")
     
     def parse_factor(self):
         if self.match([TT_PLUS,TT_MINUS,TT_BANG]):
@@ -61,7 +61,13 @@ class Parser:
         elif self.current_token and self.current_token.token_value == 'Null':
             self.advance()
             return NullLiteral()
-            
+        
+        elif self.match([TT_IDENT]):
+            variable = self.current_token.token_value
+            self.advance()
+            self.expect([TT_EQ])
+            value = self.parse_comp_expr()
+            return VarReassignNode(variable,value)
         
         elif self.match([TT_IDENT]):
             variable = self.expect([TT_IDENT])
