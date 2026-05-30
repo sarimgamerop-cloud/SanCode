@@ -1,20 +1,17 @@
-import scanner,parser,ast_nodes
+import scanner, parser, interpreter
 from scanner import *
-from parser import Parser
+from parser import *
+from interpreter import *
 
 source = """
-func add(a,b){
-    dec x = 1222225
-    dec y = 123923875 * 23
-}
+dec x = 12
+flux x = 123
 """
-# source = """
-# 8/9+5*8
-# 2 + 5
-# """
-_lexer = Lexer(source)
-_tokens = _lexer.tokenise()
-_parser = Parser(_tokens)
-print(_parser.parse())
 
-# for tok in _tokens: print(tok)
+lexer = Lexer(source)
+tokens = lexer.tokenise()
+parser = Parser(tokens)
+ast = parser.parse()
+evaluator = Evaluator()
+result = evaluator.evaluate(ast)
+print(result)
