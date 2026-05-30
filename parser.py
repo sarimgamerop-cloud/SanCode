@@ -61,14 +61,21 @@ class Parser:
         elif self.current_token and self.current_token.token_value == 'Null':
             self.advance()
             return NullLiteral()
-        
-        elif self.match([TT_IDENT]):
-            variable = self.current_token.token_value
+
+        elif self.current_token and self.current_token.token_value == 'flux':
             self.advance()
-            self.expect([TT_EQ])
-            value = self.parse_comp_expr()
-            return VarReassignNode(variable,value)
-        
+            var = self.current_token.token_value
+            if (var not in const_variables):
+                if (var in dec_variables):    
+                    self.expect([TT_IDENT])
+                    self.expect([TT_EQ])
+                    value = self.parse_comp_expr()
+                    return VarReassignNode(var,value)
+                else:
+                    raise Exception("Error!!! VAR is not declared, cant reassign")
+            else:
+                raise Exception("Error! Const is immutable")
+            
         elif self.match([TT_IDENT]):
             variable = self.expect([TT_IDENT])
             
@@ -131,9 +138,12 @@ class Parser:
             is_const = (self.current_token.token_value == 'const')
             self.expect([self.current_token.type_])
             var_name_token = self.expect([TT_IDENT])
-            self.expect([TT_EQ])
-            var_value_node = self.parse_comp_expr()
-            return VarAssignNode(var_name_token,var_value_node,is_const)
+            if var_name_token.token_value not in const_variables and var_name_token.token_value not in dec_variables:
+                self.expect([TT_EQ])
+                var_value_node = self.parse_comp_expr()
+                return VarAssignNode(var_name_token,var_value_node,is_const)
+            else:
+                raise Exception("Variable is already declared!!")
         
         elif self.current_token and self.current_token.token_value == 'if':
             self.expect([self.current_token.type_])

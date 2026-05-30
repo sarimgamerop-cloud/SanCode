@@ -68,7 +68,7 @@ TT_NEWLINE = "NEWLINE"
 
 #---Keywords-------------------------------------------------------------
 KEYWORDS = {
-    'dec', 'const', 'func', 'return',
+    'dec', 'const','flux', 'func', 'return',
     'if', 'else', 'elif',
     'loop', 'for', 'in', 'break', 'skip',
     'stdout', 'scan',

@@ -5,7 +5,7 @@ from parser import Parser
 source = """
 func add(a,b){
     dec x = 1222225
-    x = 12
+    dec y = 123923875 * 23
 }
 """
 # source = """

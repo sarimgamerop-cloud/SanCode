@@ -1,3 +1,6 @@
+const_variables = []
+dec_variables = []
+
 class NumberNode:
     def __init__(self,number):
         self.number = number.token_value
@@ -42,6 +45,11 @@ class VarAssignNode():
         self.var_name_token = var_name_token 
         self.value_node = value_node
         self.is_const = is_const
+
+        if self.is_const:
+            const_variables.append(var_name_token.token_value)
+        else:
+            dec_variables.append(var_name_token.token_value)
 
     def __repr__(self):
         keyword = "CONST" if self.is_const else "DEC"
@@ -97,7 +105,7 @@ class FuncDefNode:
         self.func_args = func_args
         self.func_body = func_body
     def __repr__(self):
-        func_args_names = ". ".join([parameter.token_value for parameter in self.func_args])
+        func_args_names = ", ".join([parameter.token_value for parameter in self.func_args])
         return f"(DEF FUNC {self.func_name} ({func_args_names}) -> {self.func_body})"
 
 class FuncCallNode:
