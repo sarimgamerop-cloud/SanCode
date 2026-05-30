@@ -55,7 +55,7 @@ class Evaluator:
     def is_truthy(self,operand):
         if operand is None or operand is False:
             return False
-        if operand == "0" or operand == "":
+        if operand == 0:
             return False
         else:
             return True
@@ -94,11 +94,11 @@ class Evaluator:
             return left + right
         elif operator == '-':
             return left - right
-        elif operator == '/':
-            return left / right
         elif operator == '*':
+            return left * right
+        elif operator == '/':
             if right != 0:
-                return left * right
+                return left / right
             else:
                 raise Exception('Zero divison error')
         elif operator == '**':
@@ -122,7 +122,7 @@ class Evaluator:
         else:
             raise Exception(f"Unknown binary operator: {node.op}")
     
-    def visit_VarAccessNode(sel,node):
+    def visit_VarAccessNode(self,node):
         return self.current_env.lookup(node.var_name_token.token_value)
     
     def visit_VarAssignNode(self,node):
