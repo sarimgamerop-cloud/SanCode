@@ -1,8 +1,27 @@
-# Arc As A School Project
-Arc was not merely a school project, it was a dedication, a fulfilled promise that I made to my younger self, to not be in the general crowd. To do something that only most people think, or dream even with all the resources they need. Arc is not just a passion, it is a demonstration of the fact that, "Dreams don't need big resources, just a lot of passion and a little bit of madness". I have been coding since I was 11 years older, and well, my first interest in computers was the first time I saw the chapter "Python" in my class 7 computer book's index, wondering what it is about and then gradually I realised that I had the power to control a piece of silicon by myself. 
+# Arc Programming Language
 
-There was a time when computer was my weakest subject in class 6, just a little below maths. And I do not know how and why, I got suddenly addicted to computers. By the time I reached class 7, I was already the "most knowledgeable kid" in the class. The kid who didn't knew how to exit from the sleep mode of the computer was suddenly the best in class. And well, I was the best till class 12, until I left the school. 
 
-By the time I reached 11, I already knew more than a first-year student from computer science. i was not just satisfied at, "A computer is an electronic device that runs on 0s and 1s to perform tasks better and efficiently". I wanted to learn more. Memory addresses, history, first ever language, Pascal's engine, the first ever computer, you name it. I went through almost everything the internet could provide, and whatever I could understand from myself and chatGPT. 
-> Computers don't actually run on 0s and 1s, it is just a way to represent the two states of the billions of transistors inside the CPU, actually, computers do not even understand 0s and 1s, all they know is if the transistors are "ON(1)" or "OFF(0)".
 
+![Arc Logo](./logo.png)
+
+
+
+Arc is a lightweight, statically-scoped programming language designed with simplicity and clarity in mind. It features a complete implementation with a lexer, recursive descent parser, and tree-walking interpreter.
+
+## Features
+
+- **Variables**: Declare mutable (`dec`) and immutable (`const`) variables
+- **Data Types**: Integers, floats, strings, booleans, null
+- **Operators**: Arithmetic (`+`, `-`, `*`, `/`, `**`), comparison (`>`, `<`, `==`, `!=`, `>=`, `<=`), logical (`&&`, `||`, `!`)
+- **Control Flow**: `if/else` conditionals, `while` loops, `break` statements
+- **Functions**: First-class function definitions with parameters, closures, and return values
+- **I/O**: `stdout()` for printing, `scan()` for user input
+- **Scoping**: Proper lexical scoping with environment chains
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd arc-language
