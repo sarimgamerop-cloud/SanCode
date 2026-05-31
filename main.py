@@ -1,6 +1,7 @@
-from scanner import Lexer, InvalidTokenError, UnterminatedStringLiteral, InvalidIdentifier, InvalidFloatLiteral, UnintialisedStringLiteral
-from parser import Parser
-from interpreter import Evaluator
+import src
+from src.scanner import Lexer, InvalidTokenError, UnterminatedStringLiteral, InvalidIdentifier, InvalidFloatLiteral, UnintialisedStringLiteral
+from src.parser import Parser
+from src.interpreter import Evaluator
 import sys
 
 def run_file(filename):
@@ -18,14 +19,16 @@ def run_file(filename):
     try:
         lexer = Lexer(source)
         tokens = lexer.tokenise()
+        # print(tokens)
         parser = Parser(tokens)
         ast = parser.parse()
+        # print(ast)
         evaluator = Evaluator()
         evaluator.evaluate(ast)
     except (InvalidTokenError, UnterminatedStringLiteral, InvalidIdentifier, InvalidFloatLiteral, UnintialisedStringLiteral) as e:
         print(f"{e.__class__.__name__}: {e}")
-    except Exception as e:
-        print(f"Error: {e}")
+    # except Exception as e:
+    #     print(f"Error: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

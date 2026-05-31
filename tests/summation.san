@@ -1,0 +1,10 @@
+func sum(n) {
+  dec total = 0
+  dec i = 1
+  while (i <= n) {
+    flux total = total + i
+    flux i = i + 1
+  }
+  return total
+}
+stdout(sum(100))

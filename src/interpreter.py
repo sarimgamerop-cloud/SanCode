@@ -107,7 +107,7 @@ class Evaluator:
             return left * right
         elif operator == '/':
             if right != 0:
-                return left / right
+                return left // right
             else:
                 raise Exception('Zero divison error')
         elif operator == '**':
@@ -138,6 +138,7 @@ class Evaluator:
         name = node.var_name_token.token_value
         value = self.evaluate(node.value_node)
         self.current_env.define(name,value)
+        # print(f"DEBUG: Defined {node.var_name_token.token_value} = {value}")
         return value
     
     def visit_VarReassignNode(self,node):

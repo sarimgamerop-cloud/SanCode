@@ -219,16 +219,13 @@ class Lexer:
             """Checks if a given sequence of numbers is a float or an integer."""
             result = []
             while self.current_char() is not None and self.current_char() in "1234567890.":
-                if self.peek() not in ALPHABETS:
-                    result.append(self.advance())
-                else:
-                    raise InvalidIdentifier(self.peek(),self.line,self.col)
+                result.append(self.advance())
             
             number = "".join(result)
             dot_count = number.count('.')
             
             if dot_count > 1:
-                raise InvalidFloatLiteral(number,self.line,self.col)
+                raise InvalidFloatLiteral(number, self.line, self.col)
             elif dot_count == 1:
                 self.add(TT_FLOAT, self.line, number)
             else:

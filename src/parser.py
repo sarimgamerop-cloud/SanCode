@@ -1,5 +1,14 @@
-from ast_nodes import *
-from scanner import *
+from .ast_nodes import *
+from .scanner import *
+
+
+class UnexpectedTokenError(Exception):
+    def __init__(self,token,expected_token,line,col):
+        super().__init__(f"class source.fatal:: private unexpected token found while parsing '{token}' instead of {expected_token},\n\t\t---> parser exited with error[#PAR001], line:col {line}:{col}")
+
+
+
+
 
 class Parser:
     def __init__(self,tokens):
@@ -29,7 +38,7 @@ class Parser:
             self.advance()
             return tok 
         else:
-            raise Exception(f"Unexpected Tokens!!! {self.current_token}")
+            raise UnexpectedTokenError(self.current_token.token_value,token_types,self.current_token.line,self.current_token.col)
     
     def parse_logical_or(self):
         left = self.parse_logical_and()
@@ -150,12 +159,9 @@ class Parser:
             is_const = (self.current_token.token_value == 'const')
             self.expect([self.current_token.type_])
             var_name_token = self.expect([TT_IDENT])
-            if var_name_token.token_value not in const_variables and var_name_token.token_value not in dec_variables:
-                self.expect([TT_EQ])
-                var_value_node = self.parse_logical_or()
-                return VarAssignNode(var_name_token,var_value_node,is_const)
-            else:
-                raise Exception("Variable is already declared!!")
+            self.expect([TT_EQ])
+            var_value_node = self.parse_comp_expr()
+            return VarAssignNode(var_name_token,var_value_node,is_const)
         
         elif self.current_token and self.current_token.token_value == 'if':
             self.advance()
@@ -164,6 +170,8 @@ class Parser:
             self.expect([TT_RPAREN])
             # self.expect([TT_LBRACE])
             if_body = self.parse_blocks()
+            if not if_body:
+                raise Exception("IF body cannot be empty")
             # self.expect([TT_RBRACE])
 
             else_body = None 
@@ -181,6 +189,8 @@ class Parser:
             condition = self.parse_logical_or()
             self.expect([TT_RPAREN])
             while_body = self.parse_blocks()
+            if not while_body:
+                raise Exception("WHILE body cannot be empty")
             return WhileNode(condition,while_body)
         
         elif self.current_token and self.current_token.token_value == 'func':
@@ -196,6 +206,8 @@ class Parser:
                     params.append(self.expect([TT_IDENT]))  
             self.expect([TT_RPAREN])
             func_body = self.parse_blocks()
+            if not func_body:
+                raise Exception("Function body cannot be empty")
             return FuncDefNode(func_name,params,func_body)
         
         elif self.current_token and self.current_token.token_value == 'return':
@@ -235,7 +247,7 @@ class Parser:
             if stmt:
                 statements.append(stmt)
             else:
-                self.advance()
+                break
         return statements
 
     def parse_blocks(self):
@@ -247,10 +259,11 @@ class Parser:
 
     def parse(self):
         statements = []
-        while self.current_token.type_ != TT_EOF or self.current_token is None:
+        while self.current_token and self.current_token.type_ != TT_EOF:
             stmt = self.parse_statements()
             if stmt:
                 statements.append(stmt)
+            else:
+                break
         return ProgramNode(statements)
-
 
