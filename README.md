@@ -128,6 +128,7 @@ San consists of the following core components:
 San is a programming language that has a great potential to be someone's first language because when you're learning San, you learning the conventions as well as structure and syntax of various other languages such as C, C++, Python, Javascript. 
 
 # Why I Made San
+- Wanted to prove compiler development is possible in an android
 - Curiosity & interest
 - To surpass my mentors
 - To learn about computers
