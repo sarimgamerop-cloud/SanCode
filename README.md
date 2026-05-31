@@ -38,6 +38,12 @@ San is a dynamically and strongly typed, statically-scoped programming language 
 
 Clone the repository:
 
-`git clone <https://github.com/anubhav-1207/san>`
-`cd san`
-`python main.py <file.san>`
+```bash
+git clone <https://github.com/anubhav-1207/san>
+```
+```bash
+cd san
+```
+```bash
+python main.py <file.san>
+```
