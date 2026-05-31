@@ -1,12 +1,10 @@
 # Arc Programming Language
 
 <div align="center">
-  <img src="./file_00000000b2ec71fa8336dd13084135ff.png" alt="Arc Logo" width="150" height="150" style="border-radius: 100%;">
+  <img src="./file_00000000b2ec71fa8336dd13084135ff.png" alt="Arc Logo" width="150" height="150" style="border-radius: 75%;">
 </div>
 
 <div align="center">
-
-[
 
 ![LANGUAGE](https://img.shields.io/badge/Language-Python-blue)
 
