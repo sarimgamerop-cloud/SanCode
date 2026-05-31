@@ -2,7 +2,7 @@
 
 
 
-![Arc Logo](./logo.png)
+![Arc Logo](./file_00000000b2ec71fa8336dd13084135ff.png)
 
 
 
