@@ -8,7 +8,7 @@
 
 [
 
-![Language](https://img.shields.io/badge/Language-Python-blue)
+(https://img.shields.io/badge/Language-Python-blue)
 
 ](https://www.python.org/)
 [
