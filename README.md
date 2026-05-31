@@ -10,27 +10,13 @@
 
 ![LANGUAGE](https://img.shields.io/badge/Language-Python-blue)
 
-](https://www.python.org/)
-[
-
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-](LICENSE)
-[
-
-![Lines of Code](https://img.shields.io/badge/Lines%20of%20Code-~2500-brightgreen)
-
-]()
-[
+![Lines of Code](https://img.shields.io/badge/Lines%20of%20Code-~1000-brightgreen)
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
 
-]()
-[
-
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-
-]()
 
 </div>
 
