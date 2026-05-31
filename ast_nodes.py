@@ -100,7 +100,7 @@ class WhileNode:
         return f"(WHILE {self.condition} DO {self.while_body})"
 
 class FuncDefNode:
-    def __init__(self,func_name,func_params,func_body):
+    def __init__(self, func_name, func_params, func_body):
         self.func_name = func_name
         self.func_params = func_params
         self.func_body = func_body
@@ -109,11 +109,11 @@ class FuncDefNode:
         return f"(DEF FUNC {self.func_name} ({func_params_names}) -> {self.func_body})"
 
 class FuncCallNode:
-    def __init__(self,func_name,func_params):
+    def __init__(self, func_name, func_args):
         self.func_name = func_name
-        self.func_params = func_params
+        self.func_args = func_args
     def __repr__(self):
-        return f"(CALL {self.func_name}({self.func_params}))"
+        return f"(CALL {self.func_name}({self.func_args}))"
         
 class ReturnNode:
     def __init__(self,value=None):

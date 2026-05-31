@@ -1,3 +1,11 @@
+
+class BreakException(Exception):
+    pass
+
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+
 class Environment:
     def __init__(self,parent=None):
         self.parent = parent
@@ -171,9 +179,13 @@ class Evaluator:
     
     def visit_WhileNode(self,node):
         result = None
-        while self.is_truthy(self.evaluate(node.condition)):
-            for stmt in node.while_body:
-                result = self.evaluate(stmt)
+        try:            
+            while self.is_truthy(self.evaluate(node.condition)):
+                for stmt in node.while_body:
+                    result = self.evaluate(stmt)
+        
+        except BreakException:
+            pass
         return result
     
     def visit_FuncDefNode(self,node):
@@ -187,16 +199,28 @@ class Evaluator:
         func_def = self.functions[node.func_name]
         func_env = Environment(parent=self.current_env)
 
-        for i,params in enumerate(func_def.func_params):
-            arg_value = self.evaluate(node.func_params)
-            func_env.define(params.token_value,arg_value)
+        for i, param in enumerate(func_def.func_params):
+            arg_value = self.evaluate(node.func_args[i])
+            func_env.define(param.token_value, arg_value)
         
         old_env = self.current_env
         self.current_env = func_env
-
+        
         result = None
-        for stmt in func_def.func_body:
-            result = self.evaluate(stmt)
+        try:
+            for stmt in func_def.func_body:
+                result = self.evaluate(stmt)
+        
+        except ReturnException as e:
+            result = e.value
+
         
         self.current_env = old_env 
         return result
+    
+    def visit_BreakNode(self,node):
+        raise BreakException()
+    
+    def visit_ReturnNode(self,node):
+        value = self.evaluate(node.value) if node.value else None
+        raise ReturnException(value)

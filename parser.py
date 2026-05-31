@@ -202,7 +202,7 @@ class Parser:
             self.expect([self.current_token.type_])
             value = None
             if self.current_token and self.current_token.type_ not in (TT_EOF,TT_RBRACE):
-                value = self.self.parse_logical_or()
+                value = self.parse_logical_or()
             return ReturnNode(value)
 
         elif self.current_token and self.current_token.token_value == 'break':

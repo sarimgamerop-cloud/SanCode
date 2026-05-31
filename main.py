@@ -5,15 +5,26 @@ from interpreter import *
 
 source = """
 func add(a, b) {
-  stdout(a + b)
+  return a + b
 }
-add(5, 3)
+dec result = add(5, 3)
+stdout(result)
+
+dec x = 0
+while (x < 3) {
+  if (x == 1) {
+    flux x = x + 1
+    break
+  }
+  stdout(x)
+  flux x = x + 1
+}
 """
 
 lexer = Lexer(source)
 tokens = lexer.tokenise()
 parser = Parser(tokens)
 ast = parser.parse()
-print(f"ast: {ast}")
+# print(f"ast: {ast}")
 evaluator = Evaluator()
 evaluator.evaluate(ast)
