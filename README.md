@@ -41,9 +41,11 @@ Clone the repository:
 ```bash
 git clone <https://github.com/anubhav-1207/san>
 ```
+Change your directory to san
 ```bash
 cd san
 ```
+Run `main.py`
 ```bash
 python main.py <file.san>
 ```
