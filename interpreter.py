@@ -38,12 +38,13 @@ class Evaluator:
     def __init__(self):
         self.global_env = Environment()
         self.current_env = self.global_env
+        self.functions = {}
     
     def evaluate(self,node):
         method_name = f"visit_{node.__class__.__name__}"
         visitor = getattr(self,method_name,None)
         if visitor is None:
-            raise Exception("No visitor node for this")
+            raise Exception(f"No visitor for {node.__class__.__name__}")
         return visitor(node)
     
     def visit_ProgramNode(self,node):
@@ -128,7 +129,7 @@ class Evaluator:
     def visit_VarAssignNode(self,node):
         name = node.var_name_token.token_value
         value = self.evaluate(node.value_node)
-        self.current_env.define(name,value,node.is_const)
+        self.current_env.define(name,value)
         return value
     
     def visit_VarReassignNode(self,node):
@@ -136,4 +137,66 @@ class Evaluator:
         value = self.evaluate(node.value_node)
         self.current_env.reassign_var(name,value)
         return value
+    
+    def visit_StdOutNode(self,node):
+        value = self.evaluate(node.value_node)
+        print(value)
+        return value
+    
+    def visit_ScanNode(self,node):
+        user_input = input()
+        try:
+            value = float(user_input)
+        except ValueError:
+            value = user_input
+        self.current_env.define(node.variable,value)
+        return value
+    
+    def visit_IfNode(self,node):
+        condition = self.evaluate(node.condition)
+        if self.is_truthy(condition):
+            result = None 
+            for stmt in node.if_body:
+                result = self.evaluate(stmt)
+            return result 
+        
+        elif node.else_body:
+            result = None
+            if node.else_body:    
+                for stmt in node.else_body:
+                    result = self.evaluate(stmt)
+                return result
+        
+        return None
+    
+    def visit_WhileNode(self,node):
+        result = None
+        while self.is_truthy(self.evaluate(node.condition)):
+            for stmt in node.while_body:
+                result = self.evaluate(stmt)
+        return result
+    
+    def visit_FuncDefNode(self,node):
+        self.functions[node.func_name] = node
+        return None
+    
+    def visit_FuncCallNode(self, node):
+        if node.func_name not in self.functions:
+            raise Exception(f"FUNC UNDEFINED {node.func_name}")
+        
+        func_def = self.functions[node.func_name]
+        func_env = Environment(parent=self.current_env)
 
+        for i,params in enumerate(func_def.func_params):
+            arg_value = self.evaluate(node.func_params)
+            func_env.define(params.token_value,arg_value)
+        
+        old_env = self.current_env
+        self.current_env = func_env
+
+        result = None
+        for stmt in func_def.func_body:
+            result = self.evaluate(stmt)
+        
+        self.current_env = old_env 
+        return result

@@ -79,7 +79,7 @@ KEYWORDS = {
 
 NUMBERS = "1234567890"
 ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-SYMBOLS = """ !@#$%,^&*()<>?/:;|+=-`~'" """
+SYMBOLS = """ !@#$%,^&*(})<>?/{:;|[]+=-`~'" """
 
 class Tokens:
     def __init__(self,type_,line: int,token_value = None,col = None):
@@ -377,13 +377,4 @@ class Lexer:
 
 
 #---Testing---------------------------------------------------------------------
-source = """
-, . 
-3.14
-"""
-if __name__ == '__main__':
-    lexer = Lexer(source)
-    tokens = lexer.tokenise()
-    for tok in tokens:
-        print(tok)
 #-------------------------------------------------------------------------------

@@ -91,6 +91,7 @@ class Parser:
             variable = self.expect([TT_IDENT])
             
             if self.current_token and self.current_token.type_ == TT_LPAREN:
+
                 self.expect([TT_LPAREN]) 
                 
                 args = []
@@ -101,9 +102,9 @@ class Parser:
                     while self.current_token and self.current_token.type_ == TT_COMMA:
                         self.expect([TT_COMMA])
                         args.append(self.parse_logical_or())
-                        
+                
                 self.expect([TT_RPAREN]) 
-                return FuncCallNode(variable, args)
+                return FuncCallNode(variable.token_value, args)
             
             return VarAccessNode(variable)
     
@@ -157,17 +158,23 @@ class Parser:
                 raise Exception("Variable is already declared!!")
         
         elif self.current_token and self.current_token.token_value == 'if':
-            self.expect([self.current_token.type_])
+            self.advance()
             self.expect([TT_LPAREN])
             condition = self.parse_logical_or()
             self.expect([TT_RPAREN])
+            # self.expect([TT_LBRACE])
             if_body = self.parse_blocks()
+            # self.expect([TT_RBRACE])
+
             else_body = None 
             if self.current_token and self.current_token.token_value == 'else':
-                self.expect([self.current_token.type_])
+                self.advance()
+                # self.expect([TT_LBRACE])
                 else_body = self.parse_blocks()
+                # self.expect([TT_RBRACE])
+            
             return IfNode(condition,if_body,else_body)
-        
+
         elif self.current_token and self.current_token.token_value == 'while':
             self.expect([self.current_token.type_])
             self.expect([TT_LPAREN])
@@ -227,14 +234,16 @@ class Parser:
             stmt = self.parse_statements()
             if stmt:
                 statements.append(stmt)
+            else:
+                self.advance()
         return statements
 
     def parse_blocks(self):
         if self.current_token and self.current_token.type_ == TT_LBRACE:
-                self.expect([TT_LBRACE])
-                statements = self.parse_statements_list()
-                self.expect([TT_RBRACE])
-                return statements
+            self.expect([TT_LBRACE])
+            statements = self.parse_statements_list()
+            self.expect([TT_RBRACE])  
+            return statements
 
     def parse(self):
         statements = []

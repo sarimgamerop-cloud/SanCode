@@ -100,20 +100,20 @@ class WhileNode:
         return f"(WHILE {self.condition} DO {self.while_body})"
 
 class FuncDefNode:
-    def __init__(self,func_name,func_args,func_body):
+    def __init__(self,func_name,func_params,func_body):
         self.func_name = func_name
-        self.func_args = func_args
+        self.func_params = func_params
         self.func_body = func_body
     def __repr__(self):
-        func_args_names = ", ".join([parameter.token_value for parameter in self.func_args])
-        return f"(DEF FUNC {self.func_name} ({func_args_names}) -> {self.func_body})"
+        func_params_names = ", ".join([parameter.token_value for parameter in self.func_params])
+        return f"(DEF FUNC {self.func_name} ({func_params_names}) -> {self.func_body})"
 
 class FuncCallNode:
-    def __init__(self,func_name,func_args):
+    def __init__(self,func_name,func_params):
         self.func_name = func_name
-        self.func_args = func_args
+        self.func_params = func_params
     def __repr__(self):
-        return f"(CALL {self.func_name}({self.func_args}))"
+        return f"(CALL {self.func_name}({self.func_params}))"
         
 class ReturnNode:
     def __init__(self,value=None):
