@@ -40,7 +40,7 @@ San is a dynamically and strongly typed, statically-scoped programming language 
 Clone the repository:
 
 ```bash
-git clone <https://github.com/anubhav-1207/san>
+git clone https://github.com/anubhav-1207/san
 ```
 Change your directory to san
 ```bash
@@ -88,7 +88,7 @@ stdout(result)
 
 ## I/O
 ```c
-dec name = scan()      // Read user input
+scan(name)      // Read user input
 stdout("Hello, World") // Print to stdout
 ```
 
