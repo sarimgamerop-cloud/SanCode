@@ -1,20 +1,25 @@
 const_variables = []
 dec_variables = []
 
-class NumberNode:
+class AST:
+    def __init__(self,line,col):
+        self.line = line 
+        self.col = col
+
+class NumberNode(AST):
     def __init__(self,number):
         self.number = number.token_value
     def __repr__(self):
         return f"(Number {self.number})"
 
-class UnaryOpNode:
+class UnaryOpNode(AST):
     def __init__(self,op,value):
         self.op = op 
         self.value = value
     def __repr__(self):
         return f"(UnaryOp{self.op} {self.value})"
     
-class BinaryOpNode:
+class BinaryOpNode(AST):
     def __init__(self,left,op,right):
         self.left = left
         self.op = op 
@@ -22,25 +27,25 @@ class BinaryOpNode:
     def __repr__(self):
         return f"(BinaryOp {self.left} {self.op} {self.right})"
 
-class BooleanLiteral:
+class BooleanLiteral(AST):
     def __init__(self,value):
         self.value = value
     def __repr__(self):
         return f"(BOOL {self.value})"
 
-class StringLiteral:
+class StringLiteral(AST):
     def __init__(self,value):
         self.value = value 
     def __repr__(self):
         return f"(STRING {self.value})"
 
-class NullLiteral:
+class NullLiteral(AST):
     def __init__(self):
         pass
     def __repr__(self):
         return f"(Null)"
 
-class VarAssignNode():
+class VarAssignNode(AST):
     def __init__(self, var_name_token, value_node,is_const):
         self.var_name_token = var_name_token 
         self.value_node = value_node
@@ -55,33 +60,33 @@ class VarAssignNode():
         keyword = "CONST" if self.is_const else "DEC"
         return f"({keyword} {self.var_name_token.token_value} = {self.value_node})"
 
-class VarReassignNode:
+class VarReassignNode(AST):
     def __init__(self,var_name_token,value_node):
         self.var_name_token = var_name_token
         self.value_node = value_node
     def __repr__(self):
         return f"(REASSIGN {self.var_name_token} = {self.value_node})"
 
-class VarAccessNode():
+class VarAccessNode(AST):
     def __init__(self, var_name_token):
         self.var_name_token = var_name_token
 
     def __repr__(self):
         return f"(ACCESS {self.var_name_token.token_value})"
 
-class BlockNode:
+class BlockNode(AST):
     def __init__(self,statements):
         self.statements = statements
     def __repr__(self):
         return f"(BLOCK {self.statements})"
 
-class ProgramNode:
+class ProgramNode(AST):
     def __init__(self,statements):
         self.statements = statements 
     def __repr__(self):
         return f"(PROGRAM {self.statements})"
 
-class IfNode:
+class IfNode(AST):
     def __init__(self,condition,if_body,else_body=None):
         self.condition = condition 
         self.if_body = if_body
@@ -92,14 +97,14 @@ class IfNode:
         else:
             return f"(IF {self.condition} THEN {self.if_body})"
 
-class WhileNode:
+class WhileNode(AST):
     def __init__(self,condition,while_body):
         self.condition = condition
         self.while_body = while_body
     def __repr__(self):
         return f"(WHILE {self.condition} DO {self.while_body})"
 
-class FuncDefNode:
+class FuncDefNode(AST):
     def __init__(self, func_name, func_params, func_body):
         self.func_name = func_name
         self.func_params = func_params
@@ -108,36 +113,33 @@ class FuncDefNode:
         func_params_names = ", ".join([parameter.token_value for parameter in self.func_params])
         return f"(DEF FUNC {self.func_name} ({func_params_names}) -> {self.func_body})"
 
-class FuncCallNode:
+class FuncCallNode(AST):
     def __init__(self, func_name, func_args):
         self.func_name = func_name
         self.func_args = func_args
     def __repr__(self):
         return f"(CALL {self.func_name}({self.func_args}))"
         
-class ReturnNode:
+class ReturnNode(AST):
     def __init__(self,value=None):
         self.value = value
     def __repr__(self):
         return f"(RETURN {self.value})"
 
-class BreakNode:
+class BreakNode(AST):
     def __init__(self):
         pass
     def __repr__(self):
         return f"(BREAK)"
 
-class StdOutNode:
+class StdOutNode(AST):
     def __init__(self,value_node):
         self.value_node = value_node
     def __repr__(self):
         return f"(STDOUT {self.value_node})"
 
-class ScanNode:
+class ScanNode(AST):
     def __init__(self,variable):
         self.variable = variable
     def __repr__(self):
         return f"(SCAN {self.variable})"
-
-
-

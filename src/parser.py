@@ -1,38 +1,63 @@
+#parser.py
+#===============================================================================
+#A parser goes through the list of tokens and produces an AST from it, discarding all irrelevant tokens.
+#===============================================================================
 from .ast_nodes import *
 from .scanner import *
 
-
+#---Error Classes--------------------------------------------------------------------
 class UnexpectedTokenError(Exception):
     def __init__(self,token,expected_token,line,col):
         super().__init__(f"class source.fatal:: private unexpected token found while parsing '{token}' instead of {expected_token},\n\t\t---> parser exited with error[#PAR001], line:col {line}:{col}")
 
+class ControlFLowError(Exception):
+    def __init__(self,code,line,col):
+        super().__init__(f"class source.fatal:: private statements found null in {code} body, cannot handle empty {code} body,\n\t\t---> parser exited with error[#PAR002], line:col {line}:{col}")
 
+class NullFuncBody(Exception):
+    def __init__(self,line,col):
+        super().__init__(f"class source.recursive:: environmental statements found null in function definiton, cannot handle null function,\n\t\t---> parser exited with error[#PAR003], line:col {line}:{col}")
 
-
-
+#---Parser Class---------------------------------------------------------------------
 class Parser:
     def __init__(self,tokens):
         self.tokens = tokens 
         self.pos = 0
         self.current_token = self.tokens[0] if self.tokens else None
 
+    #---Advance----------------------------------------------------
     def advance(self):
+        """
+        Consumes and returns the current token and advances past it.
+        """
         self.pos += 1
         if self.pos < len(self.tokens):
             self.current_token = self.tokens[self.pos]
         else:
             self.current_token = None
     
+    #---Peek-------------------------------------------------------
     def peek(self):
+        """
+        Returns the next token without consuming it.
+        """
         if (self.pos + 1) < (len(self.tokens)):
             return self.tokens[self.pos+1]
         else:
             return None 
     
+    #---Match----------------------------------------------------
     def match(self,token_types):
+        """
+        Tells if the current token_type matches the given token types(s).
+        """
         return self.current_token.type_ in token_types
     
+    #---Expect---------------------------------------------------
     def expect(self,token_types):
+        """
+        Matches the current token, if true, then consumes it, else returns error.
+        """
         if self.match(token_types):
             tok = self.current_token
             self.advance()
@@ -40,7 +65,11 @@ class Parser:
         else:
             raise UnexpectedTokenError(self.current_token.token_value,token_types,self.current_token.line,self.current_token.col)
     
+    #---OR Parser------------------------------------------------
     def parse_logical_or(self):
+        """
+        Parser '||' operator.
+        """
         left = self.parse_logical_and()
         while self.current_token and self.match([TT_OR]):
             op = self.current_token.token_value
@@ -49,7 +78,11 @@ class Parser:
             left = BinaryOpNode(left, op, right)
         return left
 
+    #---AND parser------------------------------------------
     def parse_logical_and(self):
+        """
+        Parses the '&&' operator.
+        """
         left = self.parse_comp_expr()
         while self.current_token and self.match([TT_AND]):
             op = self.current_token.token_value
@@ -58,7 +91,11 @@ class Parser:
             left = BinaryOpNode(left, op, right)
         return left
 
+    #---Factor Parser------------------------------------------
     def parse_factor(self):
+        """
+        Parses factors.
+        """
         if self.match([TT_PLUS,TT_MINUS,TT_BANG]):
             op = self.current_token.token_value
             self.advance()
@@ -117,7 +154,11 @@ class Parser:
             
             return VarAccessNode(variable)
     
+    #---Exponents Parser--------------------------------------------------------
     def parse_power(self):
+        """
+        Parser exponents.
+        """
         left = self.parse_factor()
         if self.current_token and self.match([TT_STARSTAR]):
             op = self.current_token.token_value
@@ -125,8 +166,12 @@ class Parser:
             right = self.parse_power()
             left = BinaryOpNode(left,op,right)
         return left
-        
+    
+    #---Term Parser------------------------------------------------------------
     def parse_term(self):
+        """
+        Parses terminals values.
+        """
         left = self.parse_power()
         while self.current_token and self.match([TT_STAR,TT_SLASH]):
             op = self.current_token.token_value 
@@ -136,7 +181,11 @@ class Parser:
             left = BinaryOpNode(left,op,right)
         return left 
 
+    #---Expression Parser-------------------------------------------------------
     def parse_expr(self):
+        """
+        Parses expressions.
+        """
         left = self.parse_term()
         while self.current_token and self.match([TT_PLUS,TT_MINUS]):
             op = self.current_token.token_value
@@ -145,7 +194,11 @@ class Parser:
             left = BinaryOpNode(left,op,right)
         return left
 
+    #---Comparison Parser--------------------------------------------------
     def parse_comp_expr(self):
+        """
+        Parses comparison expressions.
+        """
         left = self.parse_expr()
         while self.current_token and self.match([TT_GT,TT_GTE,TT_LT,TT_LTE,TT_EQEQ,TT_BANGEQ]):
             op = self.current_token.token_value
@@ -154,7 +207,11 @@ class Parser:
             left = BinaryOpNode(left,op,right)
         return left
     
+    #---Parse Statements--------------------------------------------------------
     def parse_statements(self):
+        """
+        Parses statements.
+        """
         if self.current_token and self.current_token.token_value in ('dec','const'):
             is_const = (self.current_token.token_value == 'const')
             self.expect([self.current_token.type_])
@@ -171,7 +228,7 @@ class Parser:
             # self.expect([TT_LBRACE])
             if_body = self.parse_blocks()
             if not if_body:
-                raise Exception("IF body cannot be empty")
+                raise ControlFLowError("if",self.current_token.line,self.current_token.col)
             # self.expect([TT_RBRACE])
 
             else_body = None 
@@ -190,7 +247,7 @@ class Parser:
             self.expect([TT_RPAREN])
             while_body = self.parse_blocks()
             if not while_body:
-                raise Exception("WHILE body cannot be empty")
+                raise ControlFLowError("while",self.current_token.line,self.current_token.col)
             return WhileNode(condition,while_body)
         
         elif self.current_token and self.current_token.token_value == 'func':
@@ -207,7 +264,7 @@ class Parser:
             self.expect([TT_RPAREN])
             func_body = self.parse_blocks()
             if not func_body:
-                raise Exception("Function body cannot be empty")
+                raise NullFuncBody(self.current_token.line,self.current_token.col)
             return FuncDefNode(func_name,params,func_body)
         
         elif self.current_token and self.current_token.token_value == 'return':
@@ -240,7 +297,11 @@ class Parser:
             expr = self.parse_logical_or()
             return expr
     
+    #---Statement List Parser------------------------------------------------------
     def parse_statements_list(self):
+        """
+        Parses statements inside a block until '}' is reached.
+        """
         statements = []
         while self.current_token and self.current_token.type_ != TT_RBRACE:
             stmt = self.parse_statements()
@@ -250,7 +311,11 @@ class Parser:
                 break
         return statements
 
+
     def parse_blocks(self):
+        """
+        Parses blocks '{}'.
+        """
         if self.current_token and self.current_token.type_ == TT_LBRACE:
             self.expect([TT_LBRACE])
             statements = self.parse_statements_list()
@@ -258,6 +323,9 @@ class Parser:
             return statements
 
     def parse(self):
+        """
+        The main parser method from where the parsing begins.
+        """
         statements = []
         while self.current_token and self.current_token.type_ != TT_EOF:
             stmt = self.parse_statements()
@@ -267,3 +335,6 @@ class Parser:
                 break
         return ProgramNode(statements)
 
+#=========================================================================================================
+#END OF FILE
+#=========================================================================================================

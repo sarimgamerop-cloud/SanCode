@@ -1,4 +1,16 @@
+#interpreter.py
+#===================================================================
+#Walks through all the AST nodes and executes them one by one.
+#===================================================================
 
+#---Error Classes-------------------------------------------------------------------------------
+class AccidentalReassError(Exception):
+    def __init__(self,var):
+        super().__init__(f"class source.fatal:: environmental variable '{var} already found, explicit reassignment expected,\n\t\t---> interpreter exited with error[#INTRPTR002]")
+
+
+
+#---Visitor Nodes-------------------------------------------------------------------------------
 class BreakException(Exception):
     pass
 
@@ -13,7 +25,7 @@ class Environment:
 
     def define(self,name,value,is_const=False):
         if name in self.vars:
-            raise Exception("Variable already exists")
+            raise AccidentalReassError(name)
         else:
             self.vars[name] = (value, is_const)
     
