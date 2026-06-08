@@ -1,4 +1,4 @@
-# Installing San 
+# Installing San On Windows
 
  To download and use San into your own system, use the following methods, corresponding to your operating system.
 
