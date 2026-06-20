@@ -2,8 +2,8 @@
 #===============================================================================
 #A parser goes through the list of tokens and produces an AST from it, discarding all irrelevant tokens.
 #===============================================================================
-from .ast_nodes import *
-from .scanner import *
+from src.ast_nodes import *
+from src.scanner import *
 
 #---Error Classes--------------------------------------------------------------------
 class UnexpectedTokenError(Exception):
