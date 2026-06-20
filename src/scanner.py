@@ -84,9 +84,9 @@ class Tokens:
 
     def __repr__(self):
         if self.token_value:
-            return f"Token({self.type_}:{self.token_value} - {self.line}:{self.col})"
+            return f"Token({self.type_}:{self.token_value} -> line - {self.line}, col - {self.col})"
         else:
-            return f"Token({self.type_} -> ln,{self.line};{self.col})"
+            return f"Token({self.type_} -> line - {self.line}, col - {self.col})"
 
 
 #---Error Class-------------------------------------------------------------------
