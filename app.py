@@ -111,7 +111,7 @@ pre{
 
 <body>
 
-<h1>San Playground</h1>
+<h1>San Playground - Type Your Code</h1>
 
 <textarea id="code">
 //Please keep the numbers small since this is executing on a browser, it might be very slow for large numbers, recommended - n < 20
